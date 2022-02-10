@@ -1,0 +1,1 @@
+# fitbit-subclass-widget
