@@ -1,6 +1,6 @@
 import { constructWidgets } from '../construct-widgets';
 
-const createLines = (el, origProto) => {
+const createLines = (useEl, origProto) => {
   // Returns lines: an object containing the widget's private and public (API) members.
   // API's prototype will be set to origProto so that useEl's members will be available if not implemented in API.
   const lines = {};
@@ -12,7 +12,7 @@ const createLines = (el, origProto) => {
 
   let createLineContainer = id => {
     // id: string: id of <line> element
-    let _lineEl = el.getElementById(id);
+    let _lineEl = useEl.getElementById(id);
 
     return {  // this object gets assigned to lines._lineNContainer
       get lineEl() {return _lineEl;},             // only for internal use; don't expose publicly
@@ -70,10 +70,12 @@ const createLines = (el, origProto) => {
     enumerable: true
   });
 
-  //lines._API.IAmALines = true    // This isn't needed; it just shows up in dumpProperties()
+  lines._API.IAmALines = true    // TODO 4 This isn't needed; it just shows up in dumpProperties()
+
+  // INITIALISATION:
 
   // Parse and process SVG config attributes:
-  const attributes = el.getElementById('config').text.split(';')
+  const attributes = useEl.getElementById('config').text.split(';')
   attributes.forEach(attribute => {
     const colonIndex = attribute.indexOf(':')
     const attributeName = attribute.substring(0, colonIndex).trim();
@@ -104,12 +106,12 @@ const createLines = (el, origProto) => {
   return lines;
 }
 
-const constructLines = el => {
-  // TODO 3.8 rename el to useEl where appropriate?
+const constructLines = useEl => {
+  // useEl: object corresponding to <use> SVG element.
   // Create new lines object and splice its closure into el's prototype chain:
-  const origProto = Object.getPrototypeOf(el);
-  const lines = createLines(el, origProto);
-  Object.setPrototypeOf(el, lines._API);
+  const origProto = Object.getPrototypeOf(useEl);
+  const lines = createLines(useEl, origProto);
+  Object.setPrototypeOf(useEl, lines._API);
 }
 
 constructWidgets('lines', constructLines);

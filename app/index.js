@@ -8,7 +8,7 @@ myLinesEl.line2.pub()
 myLinesEl.line1.style.fill = 'cyan';
 myLinesEl.line2.style.fill = 'green';
 
-//dumpProperties('myLines', myLinesEl, true)
+dumpProperties('myLines', myLinesEl, true)
 
 //let objectImplementingX = findX(myLinesEl);
 //console.log(`objectImplementingX=${objectImplementingX}`)
@@ -32,16 +32,12 @@ function dumpProperties(name, obj, types) {  // This isn't needed; it's just to 
   do {
     console.log(`  Level ${level++}:`)
     for(const memberName in proto) {
-      //console.log('in for()')
       //if (memberName === 'textContent') continue;
       if (proto.hasOwnProperty(memberName)) {
-        //console.log(`in if() ${memberName}`)
         // memberName 'text' crashes sim
         if (types)
           try {
-            //console.log('before obj[]')
             const member = obj[memberName]  // get member from top-level obj rather than proto, as the latter crashes if not a function
-            //console.log(`in try member=${member}`)
             type = typeof member
           } catch(e) {
             //console.log('in catch')
@@ -60,7 +56,6 @@ function findX(obj) {
   let level = 0
   do {
     for (const memberName in proto) {
-      //console.log('in for()')
       if (proto.hasOwnProperty('x')) return proto;
     }
     proto = Object.getPrototypeOf(proto)
