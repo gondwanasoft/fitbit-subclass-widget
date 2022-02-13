@@ -1,7 +1,7 @@
 <defs>
   <symbol id="lines" type="lines" class="widget-auto lines" >
     <line id="line1" />
-    <line id="line2" x1="250" y1="0" x2="0" y2="250" fill="red" stroke-width="5" />
+    <line id="line2" fill="red" stroke-width="5" /> <!-- don't set x1, etc, here! -->
     <text id="config" display="none" />
   </symbol>
 </defs>

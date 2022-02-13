@@ -4,4 +4,10 @@
     <set href="#line1" attributeName="stroke-width" to="5" />
     <set href="#config" attributeName="text-buffer" to="x1: 50; y1: 50; x2: 150; y2: 150; stroke-width: 3;" />
   </use>
+
+  <use id="myLines2" href="#lines">
+    <set href="#line1" attributeName="fill" to="grey" />   <!-- line1 can be accessed directly like this, but not in JS -->
+    <set href="#line1" attributeName="stroke-width" to="5" />
+    <set href="#config" attributeName="text-buffer" to="x1: 150; y1: 250; x2: 250; y2: 150; stroke-width: 3;" />
+  </use>
 </svg>

@@ -5,6 +5,7 @@ const myLinesEl = document.getElementById('myLines')
 myLinesEl.strokeWidth = 10
 myLinesEl.line1.pub()
 myLinesEl.line2.pub()
+myLinesEl.line1.style.fill = 'cyan';
 myLinesEl.line2.style.fill = 'green';
 
 //dumpProperties('myLines', myLinesEl, true)
@@ -23,7 +24,7 @@ function dumpProperties(name, obj, types) {  // This isn't needed; it's just to 
   // name: string to display in output heading
   // obj: object for which properties are to be displayed
   // types: try to determine type of each property: can cause hard crashes with some objects.
-  // TODO 3 When used on physical device, lengthy console output can be lost. Fix: use timeout in 'do' loop.
+  // TODO 9 When used on physical device, lengthy console output can be lost. Fix: use timeout in 'do' loop.
   let proto = obj
   let level = 0
   let type = '?'

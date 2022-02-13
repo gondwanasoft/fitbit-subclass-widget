@@ -1,71 +1,76 @@
 import { constructWidgets } from '../construct-widgets';
 
 const createLines = (el, origProto) => {
+  // Returns lines: an object containing the widget's private and public (API) members.
+  // API's prototype will be set to origProto so that useEl's members will be available if not implemented in API.
   const lines = {};
 
-  // These members shouldn't be publicly accessible:
-  // TODO 3 rename _closure to API?
-  // TODO 3.9 purge _ ?
-  lines._closure = Object.create(origProto);  // this will contain the public members and be linked into prototype chain
+  // PRIVATE MEMBERS:
 
-  lines._line1Container = {   // closure: API will be exposed publicly; other members are private
-    // TODO 3 redo _line1Container as function closure (like _line2Container)
-    lineEl: el.getElementById('line1'),
-    API: {  // public members
-      pub: () => {
-        console.log(`style=${el.style}`)
-        //el.style.fill = '#ffff00';
+  // TODO 3.9 purge _ ?
+  // TODO 3.3 ensure widget object is separate to useEl, but has useEl as proto
+
+  let createLineContainer = id => {
+    // id: string: id of <line> element
+    let _lineEl = el.getElementById(id);
+
+    return {  // this object gets assigned to lines._lineNContainer
+      get lineEl() {return _lineEl;},             // only for internal use; don't expose publicly
+      get API() {   // public members
+        return {
+          pub: () => {console.log(`${id} pub`);},  // TODO 3.9 del pub
+          get style() {   // c/- BarbWire; we only expose style.fill just to demonstrate restrictive API: calling code should be unable to access other style properties
+            return {
+              get fill() {return _lineEl.style.fill},
+              set fill(color) {_lineEl.style.fill = color}
+            }
+          }
+        }
       }
     }
   }
 
-  lines._line2Container = () => { // closure: members not in API will be private
-    let lineEl = el.getElementById('line2');
-    let API = {   // public members
-      pub: () => {
-        console.log('line2 pub');
-        lineEl.style.fill = 'yellow';
-      },
-      get style() {return lineEl.style;}  // TODO 3 make style a closure, so some of its members can be kept private
-    };
-    return API;
-  }
+  lines._line1Container = createLineContainer('line1');
+  lines._line1API = lines._line1Container.API;    // save this so we don't have to reconstruct the API object every time it's accessed
 
-  lines.line2 = lines._line2Container();
+  lines._line2Container = createLineContainer('line2');
+  lines._line2API = lines._line2Container.API;    // save this so we don't have to reconstruct the API object every time it's accessed
 
   //lines._objectImplementingX = findX(origProto);
   //console.log(`_objectImplementingX=${lines._objectImplementingX}`)
 
-  // These members will be publicly accessible, because they're in the closure which is linked into the prototype chain:
-  Object.defineProperty(lines._closure, 'z', { // overrides (hides) x previously available in the prototype chain
+  // PUBLIC MEMBERS:
+
+  lines._API = Object.create(origProto);  // the _API object will contain the public members and be linked into prototype chain
+
+  Object.defineProperty(lines._API, 'z', { // overrides (hides) x previously available in the prototype chain
     get: function() {
       return lines._objectImplementingX;
     }
   });
 
-  Object.defineProperty(lines._closure, 'line1', {
+  Object.defineProperty(lines._API, 'line1', {
     get: function() {   // we don't return the actual LineElement object so that callers can't access its x1, etc, which would mess things up
-      return lines._line1Container.API;
+      return lines._line1API;
     },
     enumerable: true
   });
 
-  Object.defineProperty(lines._closure, 'line2', {
+  Object.defineProperty(lines._API, 'line2', {
     get: function() {   // we don't return the actual LineElement object so that callers can't access its x1, etc, which would mess things up
-      return lines._line2Container();   // TODO 3 it could be inefficient to execute this every time; is there a cleaner way to get API?
+      return lines._line2API;
     },
     enumerable: true
   });
 
-  Object.defineProperty(lines._closure, 'strokeWidth', {
+  Object.defineProperty(lines._API, 'strokeWidth', {
     set: function(newValue) {
-      lines._line1Container.lineEl.style.strokeWidth = newValue;
-      lines.line2.style.strokeWidth = newValue;
+      lines._line1Container.lineEl.style.strokeWidth = lines._line2Container.lineEl.style.strokeWidth = newValue;
     },
     enumerable: true
   });
 
-  //lines._closure.IAmALines = true    // This isn't needed; it just shows up in dumpProperties()
+  //lines._API.IAmALines = true    // This isn't needed; it just shows up in dumpProperties()
 
   // Parse and process SVG config attributes:
   const attributes = el.getElementById('config').text.split(';')
@@ -76,19 +81,22 @@ const createLines = (el, origProto) => {
 
     switch(attributeName) {
       case 'stroke-width':
-        lines._closure.strokeWidth = Number(attributeValue);
+        lines._API.strokeWidth = Number(attributeValue);
         break;
       case 'x1':
         lines._line1Container.lineEl.x1 = Number(attributeValue);
+        lines._line2Container.lineEl.x1 = Number(attributeValue);
         break;
       case 'y1':
         lines._line1Container.lineEl.y1 = Number(attributeValue);
+        lines._line2Container.lineEl.y1 = Number(attributeValue) + 10;
         break;
       case 'x2':
-        lines._line1Container.lineEl.x2 = Number(attributeValue);
+        lines._line1Container.lineEl.x2 = lines._line2Container.lineEl.x2 = Number(attributeValue);
         break;
       case 'y2':
         lines._line1Container.lineEl.y2 = Number(attributeValue);
+        lines._line2Container.lineEl.y2 = Number(attributeValue) + 10;
         break;
     }
   });
@@ -97,10 +105,11 @@ const createLines = (el, origProto) => {
 }
 
 const constructLines = el => {
+  // TODO 3.8 rename el to useEl where appropriate?
   // Create new lines object and splice its closure into el's prototype chain:
   const origProto = Object.getPrototypeOf(el);
   const lines = createLines(el, origProto);
-  Object.setPrototypeOf(el, lines._closure);
+  Object.setPrototypeOf(el, lines._API);
 }
 
 constructWidgets('lines', constructLines);
@@ -116,5 +125,3 @@ function findX(obj) {
     proto = Object.getPrototypeOf(proto)
   } while (proto)
 }
-
-// TODO 3 test with multiple <use> instances (instances shouldn't interfere with each other)

@@ -106,9 +106,7 @@ dist
 # Custom
 .zip
 build/
-*.docx
 .vscode/
-Documentation/
 
 # Backup
 backup.bat
