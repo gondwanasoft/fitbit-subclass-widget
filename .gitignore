@@ -107,6 +107,7 @@ dist
 .zip
 build/
 .vscode/
+private/
 
 # Backup
 backup.bat
