@@ -1,16 +1,13 @@
 import { constructWidgets } from '../construct-widgets';
 
-const createLines = (useEl, origProto) => {
-  // Returns lines: an object containing the widget's private and public (API) members.
-  // API's prototype will be set to origProto so that useEl's members will be available if not implemented in API.
-  const lines = {};
+const constructLines = (useEl) => {
+  // Create new lines object.
+  // useEl: object corresponding to <use> SVG element.
+  // API's prototype will be set to useEl so that useEl's members SHOULD BE available if not implemented in API (but Fitbit blocks this).
 
   // PRIVATE MEMBERS:
 
-  // TODO 3.9 purge _ ?
-  // TODO 3.3 ensure widget object is separate to useEl, but has useEl as proto
-
-  let createLineContainer = id => {
+  let _createLineContainer = id => {
     // id: string: id of <line> element
     let _lineEl = useEl.getElementById(id);
 
@@ -30,47 +27,50 @@ const createLines = (useEl, origProto) => {
     }
   }
 
-  lines._line1Container = createLineContainer('line1');
-  lines._line1API = lines._line1Container.API;    // save this so we don't have to reconstruct the API object every time it's accessed
+  const _line1Container = _createLineContainer('line1');
+  const _line1API = _line1Container.API;    // save this so we don't have to reconstruct the API object every time it's accessed
 
-  lines._line2Container = createLineContainer('line2');
-  lines._line2API = lines._line2Container.API;    // save this so we don't have to reconstruct the API object every time it's accessed
+  const _line2Container = _createLineContainer('line2');
+  const _line2API = _line2Container.API;    // save this so we don't have to reconstruct the API object every time it's accessed
 
   //lines._objectImplementingX = findX(origProto);
   //console.log(`_objectImplementingX=${lines._objectImplementingX}`)
 
   // PUBLIC MEMBERS:
 
-  lines._API = Object.create(origProto);  // the _API object will contain the public members and be linked into prototype chain
+  //lines._API = Object.create(origProto);  // the _API object will contain the public members and be linked into prototype chain
+  const _API = Object.create(useEl);  // _API contains public members and is linked into prototype chain. useEl is prototype so useEl members SHOULD BE callable on _API (but Fitbit blocks this).
+  useEl.getWidget = () => _API;   // kludge to provide access to widget's API via the useEl object
+  _API.getElement = () => useEl;  // kludge to provide access to useEl's API via the widget object
 
-  Object.defineProperty(lines._API, 'z', { // overrides (hides) x previously available in the prototype chain
-    get: function() {
-      return lines._objectImplementingX;
+  Object.defineProperty(_API, 'x', {  // this shows that we can overload x at widget level, and still have access to the prototype (Fitbit) API implementation
+    set: function(newValue) {
+      useEl.x = newValue;
     }
   });
 
-  Object.defineProperty(lines._API, 'line1', {
+  Object.defineProperty(_API, 'line1', {
     get: function() {   // we don't return the actual LineElement object so that callers can't access its x1, etc, which would mess things up
-      return lines._line1API;
+      return _line1API;
     },
     enumerable: true
   });
 
-  Object.defineProperty(lines._API, 'line2', {
+  Object.defineProperty(_API, 'line2', {
     get: function() {   // we don't return the actual LineElement object so that callers can't access its x1, etc, which would mess things up
-      return lines._line2API;
+      return _line2API;
     },
     enumerable: true
   });
 
-  Object.defineProperty(lines._API, 'strokeWidth', {
+  Object.defineProperty(_API, 'strokeWidth', {
     set: function(newValue) {
-      lines._line1Container.lineEl.style.strokeWidth = lines._line2Container.lineEl.style.strokeWidth = newValue;
+      _line1Container.lineEl.style.strokeWidth = _line2Container.lineEl.style.strokeWidth = newValue;
     },
     enumerable: true
   });
 
-  lines._API.IAmALines = true    // TODO 4 This isn't needed; it just shows up in dumpProperties()
+  //lines._API.IAmALines = true    // TODO 8 This isn't needed; it just shows up in dumpProperties()
 
   // INITIALISATION:
 
@@ -83,35 +83,24 @@ const createLines = (useEl, origProto) => {
 
     switch(attributeName) {
       case 'stroke-width':
-        lines._API.strokeWidth = Number(attributeValue);
+        _API.strokeWidth = Number(attributeValue);
         break;
       case 'x1':
-        lines._line1Container.lineEl.x1 = Number(attributeValue);
-        lines._line2Container.lineEl.x1 = Number(attributeValue);
+        _line1Container.lineEl.x1 = _line2Container.lineEl.x1 = Number(attributeValue);
         break;
       case 'y1':
-        lines._line1Container.lineEl.y1 = Number(attributeValue);
-        lines._line2Container.lineEl.y1 = Number(attributeValue) + 10;
+        _line1Container.lineEl.y1 = Number(attributeValue);
+        _line2Container.lineEl.y1 = Number(attributeValue) + 10;
         break;
       case 'x2':
-        lines._line1Container.lineEl.x2 = lines._line2Container.lineEl.x2 = Number(attributeValue);
+        _line1Container.lineEl.x2 = _line2Container.lineEl.x2 = Number(attributeValue);
         break;
       case 'y2':
-        lines._line1Container.lineEl.y2 = Number(attributeValue);
-        lines._line2Container.lineEl.y2 = Number(attributeValue) + 10;
+        _line1Container.lineEl.y2 = Number(attributeValue);
+        _line2Container.lineEl.y2 = Number(attributeValue) + 10;
         break;
     }
   });
-
-  return lines;
-}
-
-const constructLines = useEl => {
-  // useEl: object corresponding to <use> SVG element.
-  // Create new lines object and splice its closure into el's prototype chain:
-  const origProto = Object.getPrototypeOf(useEl);
-  const lines = createLines(useEl, origProto);
-  Object.setPrototypeOf(useEl, lines._API);
 }
 
 constructWidgets('lines', constructLines);
@@ -127,3 +116,5 @@ function findX(obj) {
     proto = Object.getPrototypeOf(proto)
   } while (proto)
 }
+
+// TODO 9 purge _ from names?

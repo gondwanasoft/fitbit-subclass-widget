@@ -2,13 +2,18 @@ import document from 'document'
 import './widgets/lines'
 
 const myLinesEl = document.getElementById('myLines')
-myLinesEl.strokeWidth = 10
-myLinesEl.line1.pub()
-myLinesEl.line2.pub()
-myLinesEl.line1.style.fill = 'cyan';
-myLinesEl.line2.style.fill = 'green';
+const myLinesWidget = myLinesEl.getWidget()
+myLinesWidget.strokeWidth = 10
+myLinesWidget.line1.pub()
+myLinesWidget.line2.pub()
+myLinesWidget.line1.style.fill = 'cyan';
+myLinesWidget.line2.style.fill = 'green';
+myLinesWidget.x = 168;    // works because widget explicitly implements x (and passes it to useEl)
+//myLinesWidget.y = 168;    // crashes because widget doesn't implement y, and Fitbit API can only be called on useEl directly
+//myLinesEl.y = 168;    // works, but unfortunate to have to call some things against El and other things against widget
+//myLinesWidget.getElement().y = 168;   // works but ugly
 
-dumpProperties('myLines', myLinesEl, true)
+//dumpProperties('myLines', myLinesEl, true)
 
 //let objectImplementingX = findX(myLinesEl);
 //console.log(`objectImplementingX=${objectImplementingX}`)
