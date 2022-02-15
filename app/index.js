@@ -6,7 +6,6 @@ const myLinesWidget = myLinesEl.getWidget()
 myLinesWidget.strokeWidth = 10
 //myLinesWidget.line1.pub()   // works
 //myLinesWidget.line2.pub()   // works
-myLinesWidget.line1.style.fill = 'cyan';
 myLinesWidget.line2.style.fill = 'green';
 myLinesWidget.x = 168;    // works because widget explicitly implements x (and passes it to useEl)
 //myLinesWidget.y = 168;    // crashes because widget doesn't implement y, and Fitbit API can only be called on useEl directly
@@ -25,19 +24,13 @@ let z = myLinesEl.z;
 //console.log(`z=${z} ${z.hasOwnProperty('x')}`);
 //dumpProperties('z', z)
 
-dumpSym()
-
-async function dumpSym() {
-  const symEl = document.getElementById('sym');
-  await dumpProperties('sym', symEl, true)
-  const useEl = document.getElementById('use');
-  dumpProperties('use', useEl, true)
-}
-
 async function dumpProperties(name, obj, types) {  // This isn't needed; it's just to show how everything links together
-  // name: string to display in output heading
-  // obj: object for which properties are to be displayed
-  // types: try to determine type of each property: can cause hard crashes with some objects.
+  // Lists all accessible properties defined in obj and all of its prototypes.
+  // async because function awaits between prototype levels, and therefore shouldn't be called multiple times in quick succession.
+  // Call using await (may need to do so from within an async function).
+  // name: string to display in output heading.
+  // obj: object for which properties are to be displayed.
+  // types: boolean: try to determine type of each property (can cause hard crashes with some objects).
 
   function sleep(n) { return new Promise(resolve=>setTimeout(resolve,n)); }
 
@@ -64,7 +57,7 @@ async function dumpProperties(name, obj, types) {  // This isn't needed; it's ju
     }
     proto = Object.getPrototypeOf(proto)
     console.log('    ---------------')
-    await sleep(1000)
+    await sleep(1000)   // ...because debug bridge silently drops lines if it gets flooded
   } while (proto)
   console.log('  Done!')
 }

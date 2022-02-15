@@ -1,3 +1,7 @@
 #myLines {
-  /*fill: green;*/  /* seems to over-ride fill set in .js */
+  /*fill: cyan;*/  /* seems to over-ride fill set in .js */
+}
+
+#myLines #line1 {   /* In constructWidgets(), this needs `useEl.class = useEl.class` */
+  fill: cyan;  /* seems to over-ride fill set in .js */
 }
