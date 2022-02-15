@@ -1,0 +1,92 @@
+Members of sym:
+Level 0:
+---------------
+Level 1:
+constructor (function)
+x (undefined)
+y (undefined)
+width (undefined)
+height (undefined)
+---------------
+Level 2:
+constructor (function)
+parent (object)
+nextSibling (object)
+firstChild (object)
+children (object)
+text (INACCESSIBLE)
+textContent (INACCESSIBLE)
+innerText (INACCESSIBLE)
+getElementById (function)
+getElementsByClassName (function)
+getElementsByTypeName (function)
+getElementsByTagName (function)
+sendEvent (function)
+appendChild (function)
+animate (function)
+id (string)
+class (string)
+type (string)
+layer (undefined)
+---------------
+Level 3:
+constructor (function)
+addEventListener (function)
+removeEventListener (function)
+dispatchEvent (function)
+---------------
+Level 4:
+---------------
+Done!
+
+Members of use:
+Level 0:
+---------------
+Level 1:
+constructor (function)
+text (string)
+image (string)
+value (undefined)
+mode (number)
+state (undefined)
+highlight (INACCESSIBLE)
+style (object)
+x (undefined)
+y (undefined)
+width (undefined)
+height (undefined)
+---------------
+Level 2:
+constructor (function)
+getBBox (function)
+---------------
+Level 3:
+constructor (function)
+parent (object)
+nextSibling (object)
+firstChild (object)
+children (object)
+text (string)
+textContent (INACCESSIBLE)
+innerText (INACCESSIBLE)
+getElementById (function)
+getElementsByClassName (function)
+getElementsByTypeName (function)
+getElementsByTagName (function)
+sendEvent (function)
+appendChild (function)
+animate (function)
+id (string)
+class (string)
+type (string)
+layer (undefined)
+---------------
+Level 4:
+constructor (function)
+addEventListener (function)
+removeEventListener (function)
+dispatchEvent (function)
+---------------
+Level 5:
+---------------
+Done!
