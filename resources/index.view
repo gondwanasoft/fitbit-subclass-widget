@@ -1,4 +1,9 @@
 <svg>
+  <symbol id="sym">
+    <line />
+  </symbol><!-- TODO 3 del -->
+  <use id="use" href="#sym" />
+
   <use id="myLines" href="#lines">
     <set href="#line1" attributeName="fill" to="blue" />   <!-- line1 can be accessed directly like this, but not in JS -->
     <set href="#line1" attributeName="stroke-width" to="5" />

@@ -4,8 +4,8 @@ import './widgets/lines'
 const myLinesEl = document.getElementById('myLines')
 const myLinesWidget = myLinesEl.getWidget()
 myLinesWidget.strokeWidth = 10
-myLinesWidget.line1.pub()
-myLinesWidget.line2.pub()
+//myLinesWidget.line1.pub()   // works
+//myLinesWidget.line2.pub()   // works
 myLinesWidget.line1.style.fill = 'cyan';
 myLinesWidget.line2.style.fill = 'green';
 myLinesWidget.x = 168;    // works because widget explicitly implements x (and passes it to useEl)
@@ -25,11 +25,22 @@ let z = myLinesEl.z;
 //console.log(`z=${z} ${z.hasOwnProperty('x')}`);
 //dumpProperties('z', z)
 
-function dumpProperties(name, obj, types) {  // This isn't needed; it's just to show how everything links together
+dumpSym()
+
+async function dumpSym() {
+  const symEl = document.getElementById('sym');
+  await dumpProperties('sym', symEl, true)
+  const useEl = document.getElementById('use');
+  dumpProperties('use', useEl, true)
+}
+
+async function dumpProperties(name, obj, types) {  // This isn't needed; it's just to show how everything links together
   // name: string to display in output heading
   // obj: object for which properties are to be displayed
   // types: try to determine type of each property: can cause hard crashes with some objects.
-  // TODO 9 When used on physical device, lengthy console output can be lost. Fix: use timeout in 'do' loop.
+
+  function sleep(n) { return new Promise(resolve=>setTimeout(resolve,n)); }
+
   let proto = obj
   let level = 0
   let type = '?'
@@ -52,8 +63,10 @@ function dumpProperties(name, obj, types) {  // This isn't needed; it's just to 
       }
     }
     proto = Object.getPrototypeOf(proto)
-    console.log('  ---------------')
+    console.log('    ---------------')
+    await sleep(1000)
   } while (proto)
+  console.log('  Done!')
 }
 
 function findX(obj) {
